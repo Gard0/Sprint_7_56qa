@@ -1,0 +1,6 @@
+.idea/
+target/
+!.mvn/
+!.mvn/**
+!target/allure-results/
+!target/allure-results/**
