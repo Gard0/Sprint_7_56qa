@@ -10,6 +10,7 @@ import ru.praktikum.util.OrderGenerator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -23,7 +24,7 @@ public class OrderCreateTest {
         Order order = OrderGenerator.createOrder(colors);
 
         orderSteps.createOrder(order).then()
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .body("track", notNullValue())
                 .body("track", greaterThan(0));
     }

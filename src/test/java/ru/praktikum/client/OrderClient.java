@@ -1,37 +1,36 @@
 package ru.praktikum.client;
 
 import io.restassured.response.Response;
+import ru.praktikum.config.Endpoints;
 import ru.praktikum.model.Order;
 
 public class OrderClient extends BaseClient {
 
-    private static final String ORDERS_PATH = "/orders";
-
     public Response createOrder(Order order) {
-        return post(ORDERS_PATH, order);
+        return post(Endpoints.ORDERS, order);
     }
 
     public Response getOrders() {
-        return get(ORDERS_PATH);
+        return get(Endpoints.ORDERS);
     }
 
     public Response acceptOrder(int orderId, int courierId) {
-        return putWithQuery(ORDERS_PATH + "/accept/" + orderId, "courierId", courierId);
+        return putWithQuery(Endpoints.ORDERS_ACCEPT + "/" + orderId, "courierId", courierId);
     }
 
     public Response acceptOrderWithoutCourierId(int orderId) {
-        return put(ORDERS_PATH + "/accept/" + orderId);
+        return put(Endpoints.ORDERS_ACCEPT + "/" + orderId);
     }
 
     public Response acceptOrderWithoutOrderId(int courierId) {
-        return putWithQuery(ORDERS_PATH + "/accept/", "courierId", courierId);
+        return putWithQuery(Endpoints.ORDERS_ACCEPT + "/", "courierId", courierId);
     }
 
     public Response getOrderByTrack(int track) {
-        return getWithQuery(ORDERS_PATH + "/track", "t", track);
+        return getWithQuery(Endpoints.ORDERS_TRACK, "t", track);
     }
 
     public Response getOrderByTrackWithoutTrack() {
-        return get(ORDERS_PATH + "/track");
+        return get(Endpoints.ORDERS_TRACK);
     }
 }

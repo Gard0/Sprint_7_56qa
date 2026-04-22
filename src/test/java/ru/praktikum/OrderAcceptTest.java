@@ -8,6 +8,11 @@ import ru.praktikum.steps.OrderSteps;
 import ru.praktikum.util.CourierGenerator;
 import ru.praktikum.util.OrderGenerator;
 
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_CONFLICT;
+import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.equalTo;
 
 public class OrderAcceptTest extends BaseApiTest {
@@ -24,13 +29,13 @@ public class OrderAcceptTest extends BaseApiTest {
         Order order = OrderGenerator.createOrder(null);
         int track = orderSteps.createOrder(order)
                 .then()
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .extract()
                 .path("track");
 
         orderId = orderSteps.getOrderByTrack(track)
                 .then()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .extract()
                 .path("order.id");
     }
@@ -38,34 +43,46 @@ public class OrderAcceptTest extends BaseApiTest {
     @Test
     void shouldAcceptOrder() {
         orderSteps.acceptOrder(orderId, courierIdToDelete).then()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("ok", equalTo(true));
+    }
+
+    @Test
+    void shouldNotAcceptAcceptedOrder() {
+        orderSteps.acceptOrder(orderId, courierIdToDelete).then()
+                .statusCode(SC_OK)
+                .body("ok", equalTo(true));
+
+        orderSteps.acceptOrder(orderId, courierIdToDelete).then()
+                .statusCode(SC_CONFLICT)
+                .body("message", equalTo("Этот заказ уже в работе"));
     }
 
     @Test
     void shouldNotAcceptOrderWithoutCourierId() {
         orderSteps.acceptOrderWithoutCourierId(orderId).then()
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для поиска"));
     }
 
     @Test
     void shouldNotAcceptOrderWithWrongCourierId() {
         orderSteps.acceptOrder(orderId, 999999999).then()
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", equalTo("Курьера с таким id не существует"));
     }
 
     @Test
     void shouldNotAcceptOrderWithoutOrderId() {
         orderSteps.acceptOrderWithoutOrderId(courierIdToDelete).then()
-                .statusCode(404);
+                .statusCode(SC_NOT_FOUND)
+                .body("message", equalTo("Not Found."));
     }
 
     @Test
     void shouldNotAcceptOrderWithWrongOrderId() {
         orderSteps.acceptOrder(999999999, courierIdToDelete).then()
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", equalTo("Заказа с таким id не существует"));
     }
 }

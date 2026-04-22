@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import ru.praktikum.model.Courier;
 import ru.praktikum.util.CourierGenerator;
 
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.equalTo;
 
 public class CourierDeleteTest extends BaseApiTest {
@@ -18,20 +20,21 @@ public class CourierDeleteTest extends BaseApiTest {
         Response deleteResponse = courierSteps.deleteCourier(courierId);
 
         deleteResponse.then()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("ok", equalTo(true));
     }
 
     @Test
     void shouldNotDeleteCourierWithoutId() {
         courierSteps.deleteCourierWithoutId().then()
-                .statusCode(404);
+                .statusCode(SC_NOT_FOUND)
+                .body("message", equalTo("Not Found."));
     }
 
     @Test
     void shouldNotDeleteNonexistentCourier() {
         courierSteps.deleteCourier(999999999).then()
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", equalTo("Курьера с таким id нет."));
     }
 }

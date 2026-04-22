@@ -6,6 +6,9 @@ import ru.praktikum.model.Courier;
 import ru.praktikum.model.CourierCredentials;
 import ru.praktikum.util.CourierGenerator;
 
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.notNullValue;
@@ -21,7 +24,7 @@ public class CourierLoginTest extends BaseApiTest {
         Response loginResponse = courierSteps.loginCourier(CourierGenerator.credentialsFromCourier(courier));
 
         loginResponse.then()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("id", notNullValue())
                 .body("id", greaterThan(0));
     }
@@ -31,7 +34,16 @@ public class CourierLoginTest extends BaseApiTest {
         Response loginResponse = courierSteps.loginCourier(new CourierCredentials(null, "password"));
 
         loginResponse.then()
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
+                .body("message", equalTo("Недостаточно данных для входа"));
+    }
+
+    @Test
+    void shouldNotLoginWithoutPassword() {
+        Response loginResponse = courierSteps.loginCourier(new CourierCredentials("login", ""));
+
+        loginResponse.then()
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для входа"));
     }
 
@@ -44,7 +56,7 @@ public class CourierLoginTest extends BaseApiTest {
         Response loginResponse = courierSteps.loginCourier(new CourierCredentials(courier.getLogin(), "wrongPassword"));
 
         loginResponse.then()
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", equalTo("Учетная запись не найдена"));
     }
 
@@ -55,7 +67,7 @@ public class CourierLoginTest extends BaseApiTest {
         Response loginResponse = courierSteps.loginCourier(CourierGenerator.credentialsFromCourier(courier));
 
         loginResponse.then()
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", equalTo("Учетная запись не найдена"));
     }
 }

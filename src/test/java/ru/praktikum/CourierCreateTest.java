@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import ru.praktikum.model.Courier;
 import ru.praktikum.util.CourierGenerator;
 
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_CONFLICT;
+import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.hamcrest.Matchers.equalTo;
 
 public class CourierCreateTest extends BaseApiTest {
@@ -17,7 +20,7 @@ public class CourierCreateTest extends BaseApiTest {
         courierIdToDelete = courierSteps.getCourierId(courier);
 
         createResponse.then()
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .body("ok", equalTo(true));
     }
 
@@ -30,7 +33,7 @@ public class CourierCreateTest extends BaseApiTest {
         Response duplicateResponse = courierSteps.createCourier(courier);
 
         duplicateResponse.then()
-                .statusCode(409)
+                .statusCode(SC_CONFLICT)
                 .body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
     }
 
@@ -41,7 +44,7 @@ public class CourierCreateTest extends BaseApiTest {
         Response createResponse = courierSteps.createCourier(courier);
 
         createResponse.then()
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 
@@ -52,7 +55,7 @@ public class CourierCreateTest extends BaseApiTest {
         Response createResponse = courierSteps.createCourier(courier);
 
         createResponse.then()
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 }

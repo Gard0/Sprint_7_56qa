@@ -6,6 +6,10 @@ import ru.praktikum.model.Order;
 import ru.praktikum.steps.OrderSteps;
 import ru.praktikum.util.OrderGenerator;
 
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -19,7 +23,7 @@ public class OrderTrackTest {
         Order order = OrderGenerator.createOrder(null);
         track = orderSteps.createOrder(order)
                 .then()
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .extract()
                 .path("track");
     }
@@ -27,7 +31,7 @@ public class OrderTrackTest {
     @Test
     void shouldReturnOrderByTrack() {
         orderSteps.getOrderByTrack(track).then()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("order", notNullValue())
                 .body("order.track", equalTo(track));
     }
@@ -35,14 +39,14 @@ public class OrderTrackTest {
     @Test
     void shouldNotReturnOrderWithoutTrack() {
         orderSteps.getOrderByTrackWithoutTrack().then()
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для поиска"));
     }
 
     @Test
     void shouldNotReturnOrderForWrongTrack() {
         orderSteps.getOrderByTrack(999999999).then()
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", equalTo("Заказ не найден"));
     }
 }

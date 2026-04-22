@@ -3,6 +3,7 @@ package ru.praktikum;
 import org.junit.jupiter.api.Test;
 import ru.praktikum.steps.OrderSteps;
 
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class OrderListTest {
@@ -12,7 +13,7 @@ public class OrderListTest {
     @Test
     void shouldReturnOrdersList() {
         orderSteps.getOrders().then()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("orders", notNullValue());
     }
 }
